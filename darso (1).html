@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>درسو | DarsO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;height:100%;background:#070b16;}
+:root{
+  --bg0:#070b16; --bg1:#0e1730; --bg2:#16234a;
+  --gold:#d4af37; --gold-soft:#f0d98c;
+  --blue:#3b82f6; --green:#22c55e; --red:#ef4444;
+  --glass:rgba(255,255,255,.06); --glass-bd:rgba(255,255,255,.14);
+  --text:#eaf0ff; --dim:#94a3c4;
+  --radius:18px; --fs:16px;
+}
+body.light{
+  --bg0:#eef1f8; --bg1:#e4e9f5; --bg2:#d8e0f2;
+  --glass:rgba(255,255,255,.65); --glass-bd:rgba(20,30,60,.1);
+  --text:#101728; --dim:#4a5578;
+}
+#darso-root *{box-sizing:border-box;}
+#darso-root{
+  font-family:'Vazirmatn',system-ui,sans-serif;
+  font-size:var(--fs);
+  color:var(--text);
+  background:radial-gradient(ellipse at 30% -10%, var(--bg2), var(--bg1) 45%, var(--bg0) 100%);
+  min-height:100vh; height:100%; width:100%;
+  position:relative; overflow:hidden; direction:rtl;
+  transition:background .4s ease,color .3s ease;
+}
+#darso-root.ltr{direction:ltr;}
+.scene{position:relative; min-height:100vh; display:flex; flex-direction:column;}
+/* floating academic emblem background */
+.emblem-wrap{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+.emblem-ring{
+  position:absolute; top:50%; left:50%; width:560px; height:560px; margin:-280px 0 0 -280px;
+  border-radius:50%; border:1px dashed rgba(212,175,55,.25);
+  animation:spin 40s linear infinite;
+}
+.emblem-ring.r2{width:400px;height:400px;margin:-200px 0 0 -200px;border-color:rgba(59,130,246,.2);animation-duration:28s;animation-direction:reverse;}
+.emblem-ring.r3{width:720px;height:720px;margin:-360px 0 0 -360px;border-color:rgba(212,175,55,.12);animation-duration:60s;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.cap{position:absolute; font-size:64px; opacity:.18; filter:drop-shadow(0 0 18px rgba(212,175,55,.4)); animation:float 7s ease-in-out infinite;}
+.glow{position:absolute; width:340px; height:340px; border-radius:50%; filter:blur(90px); opacity:.35; background:radial-gradient(circle, var(--blue), transparent 70%);}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-22px) rotate(6deg)}}
+.glass{background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--glass-bd); border-radius:var(--radius);}
+.btn{cursor:pointer; border:none; border-radius:14px; padding:14px 18px; font-family:inherit; font-size:1em; font-weight:600; transition:transform .12s ease, box-shadow .2s ease; }
+.btn:active{transform:translateY(2px);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#241a02; box-shadow:0 6px 20px rgba(212,175,55,.25);}
+.btn-blue{background:linear-gradient(135deg,#60a5fa,var(--blue)); color:#fff; box-shadow:0 6px 20px rgba(59,130,246,.3);}
+.btn-ghost{background:var(--glass); color:var(--text); border:1px solid var(--glass-bd);}
+.btn-danger{background:linear-gradient(135deg,#f87171,var(--red)); color:#fff;}
+.btn:disabled{opacity:.4; cursor:not-allowed;}
+input[type=text]{
+  width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--glass-bd);
+  background:rgba(255,255,255,.05); color:var(--text); font-family:inherit; font-size:1em; outline:none;
+}
+input[type=text]:focus{border-color:var(--gold);}
+.center-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; position:relative; z-index:1;}
+.topbar{display:flex; justify-content:space-between; align-items:center; padding:16px 20px; position:relative; z-index:2;}
+.pill{display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:999px;}
+.hamburger{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+.menu-panel{position:fixed; top:0; bottom:0; width:280px; z-index:50; padding:20px; display:flex; flex-direction:column; gap:10px; transition:transform .3s ease;}
+#darso-root:not(.ltr) .menu-panel{right:0; border-radius:20px 0 0 20px; transform:translateX(100%);}
+#darso-root:not(.ltr) .menu-panel.open{transform:translateX(0);}
+#darso-root.ltr .menu-panel{left:0; border-radius:0 20px 20px 0; transform:translateX(-100%);}
+#darso-root.ltr .menu-panel.open{transform:translateX(0);}
+.menu-item{display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:12px; cursor:pointer; font-weight:600;}
+.menu-item:hover{background:rgba(255,255,255,.08);}
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:40; opacity:0; pointer-events:none; transition:opacity .3s;}
+.overlay.open{opacity:1; pointer-events:auto;}
+.card{padding:18px; margin-bottom:12px;}
+.row{display:flex; align-items:center; gap:12px;}
+.dot{width:10px;height:10px;border-radius:50%; box-shadow:0 0 8px currentColor;}
+.dot.on{background:var(--green); color:var(--green);}
+.dot.off{background:var(--red); color:var(--red);}
+.page{width:100%; max-width:520px; margin:0 auto; padding:16px; position:relative; z-index:1; flex:1; overflow-y:auto;}
+.page-title{font-size:1.4em; font-weight:800; margin-bottom:16px; display:flex; align-items:center; gap:10px;}
+.back-btn{cursor:pointer; opacity:.8; font-weight:600; display:inline-flex; gap:6px; align-items:center; margin-bottom:14px;}
+.toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:100; padding:14px 22px; border-radius:14px; font-weight:600; animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0; transform:translate(-50%,10px)} to{opacity:1; transform:translate(-50%,0)}}
+.modal-back{position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:80; display:flex; align-items:center; justify-content:center; padding:20px;}
+.modal{max-width:400px; width:100%; padding:26px; text-align:center;}
+.option-btn{width:100%; text-align:inherit; padding:14px 16px; border-radius:12px; border:1px solid var(--glass-bd); background:rgba(255,255,255,.04); margin-bottom:10px; cursor:pointer; font-family:inherit; color:var(--text); font-size:.95em; transition:.15s;}
+.option-btn.correct{background:rgba(34,197,94,.25); border-color:var(--green);}
+.option-btn.wrong{background:rgba(239,68,68,.25); border-color:var(--red);}
+.progress-bar{height:6px; border-radius:3px; background:rgba(255,255,255,.1); overflow:hidden; margin-bottom:18px;}
+.progress-fill{height:100%; background:linear-gradient(90deg,var(--blue),var(--gold)); transition:width .3s;}
+.coin{display:inline-flex; align-items:center; gap:4px; color:var(--gold-soft); font-weight:700;}
+.watermark{text-align:center; font-size:.72em; color:var(--dim); padding:10px; position:relative; z-index:1;}
+.support-link{display:inline-flex; align-items:center; gap:6px; color:var(--gold-soft); text-decoration:none; font-weight:600; font-size:.92em;}
+.main-btn{width:100%; padding:20px; border-radius:18px; display:flex; align-items:center; gap:16px; margin-bottom:14px; cursor:pointer; text-align:right;}
+.main-btn .ic{font-size:28px;}
+.main-btn .lbl{font-weight:800; font-size:1.05em;}
+.main-btn .sub{font-size:.78em; color:var(--dim); font-weight:400;}
+.lang-toggle{display:flex; gap:8px; margin:16px 0;}
+.lang-opt{flex:1; padding:12px; border-radius:12px; text-align:center; cursor:pointer; border:1px solid var(--glass-bd); font-weight:600;}
+.lang-opt.active{background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#241a02; border-color:transparent;}
+.msg-bubble{max-width:75%; padding:10px 14px; border-radius:14px; margin-bottom:8px; font-size:.92em;}
+.msg-mine{margin-inline-start:auto; background:linear-gradient(135deg,#60a5fa,var(--blue)); color:#fff; border-bottom-left-radius:4px;}
+.msg-theirs{background:var(--glass); border:1px solid var(--glass-bd); border-bottom-right-radius:4px;}
+.badge{position:absolute; top:-4px; inset-inline-end:-4px; background:var(--red); color:#fff; font-size:.65em; border-radius:999px; min-width:18px; height:18px; display:flex; align-items:center; justify-content:center; padding:0 4px;}
+::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15); border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="darso-root"><div id="darso-app"></div></div>
+
+<script>
+(function(){
+
+const LEARNING = [
+ {id:1,titleFa:"مقدمه‌ای بر روانشناسی",titleEn:"Introduction to Psychology",contentFa:"روانشناسی علم مطالعه ذهن و رفتار است. این رشته شامل بررسی پدیده‌های آگاهانه و ناآگاهانه و همچنین احساسات و افکار می‌شود. روانشناسی یک رشته علمی با دامنه وسیع است که از مرزهای علوم طبیعی تا علوم اجتماعی را در بر می‌گیرد.",contentEn:"Psychology is the scientific study of mind and behavior. It encompasses the study of both conscious and unconscious phenomena, including feelings and thoughts. Psychology is an academic discipline of immense scope, crossing the boundaries between the natural and social sciences.",cat:"basics"},
+ {id:2,titleFa:"حافظه و یادگیری",titleEn:"Memory and Learning",contentFa:"حافظه فرایندی است که اطلاعات در آن کدگذاری، ذخیره و بازیابی می‌شود. حافظه برای تمام جنبه‌های زندگی روزمره حیاتی است. انواع حافظه شامل حافظه کوتاه‌مدت، حافظه بلندمدت و حافظه کاری می‌شود.",contentEn:"Memory is the process by which information is encoded, stored, and retrieved. Memory is vital to all aspects of daily life. Types of memory include short-term memory, long-term memory, and working memory.",cat:"cognitive"},
+ {id:3,titleFa:"هوش هیجانی",titleEn:"Emotional Intelligence",contentFa:"هوش هیجانی توانایی درک، استفاده، مدیریت و کنترل احساسات خود و دیگران است. افرادی با هوش هیجانی بالا قادرند احساسات خود و دیگران را بشناسند و از آنها برای هدایت تفکر و رفتار استفاده کنند.",contentEn:"Emotional intelligence is the ability to understand, use, manage, and control your own emotions and those of others. People with high emotional intelligence can recognize their own and others' emotions and use them to guide thinking and behavior.",cat:"emotional"},
+ {id:4,titleFa:"شخصیت‌شناسی",titleEn:"Personality Psychology",contentFa:"شخصیت‌شناسی شاخه‌ای از روانشناسی است که به مطالعه تفاوت‌های فردی در شخصیت می‌پردازد. مدل پنج عاملی شخصیت شامل برون‌گرایی، توافق‌پذیری، وظیفه‌شناسی، روان‌رنجوری و گشودگی به تجربه است.",contentEn:"Personality psychology studies individual differences in personality. The Big Five personality model includes extraversion, agreeableness, conscientiousness, neuroticism, and openness to experience.",cat:"personality"},
+ {id:5,titleFa:"استرس و مقابله",titleEn:"Stress and Coping",contentFa:"استرس واکنش بدن به هر نوع تقاضا یا تهدید است. وقتی احساس خطر می‌کنید، سیستم عصبی بدن با آزاد کردن هورمون‌های استرس پاسخ می‌دهد. راهکارهای مقابله با استرس شامل ورزش، مدیتیشن و مدیریت زمان است.",contentEn:"Stress is the body's reaction to any demand or threat. When you feel danger, your nervous system responds by releasing stress hormones. Coping strategies include exercise, meditation, and time management.",cat:"health"}
+];
+const QUIZ = [
+ {q:{fa:"روانشناسی علم مطالعه چیست؟",en:"Psychology is the scientific study of what?"},o:{fa:["ذهن و رفتار","فیزیک و شیمی","تاریخ و جغرافیا","ریاضیات"],en:["Mind and behavior","Physics and chemistry","History and geography","Mathematics"]},a:0},
+ {q:{fa:"کدام نوع حافظه اطلاعات را برای مدت کوتاهی نگه می‌دارد؟",en:"Which type of memory holds information for a short period?"},o:{fa:["حافظه بلندمدت","حافظه کوتاه‌مدت","حافظه حسی","حافظه معنایی"],en:["Long-term memory","Short-term memory","Sensory memory","Semantic memory"]},a:1},
+ {q:{fa:"هوش هیجانی شامل کدام توانایی است؟",en:"Emotional intelligence includes which ability?"},o:{fa:["حل معادلات ریاضی","درک و مدیریت احساسات","حفظ کردن اعداد","سرعت در دویدن"],en:["Solving math equations","Understanding and managing emotions","Memorizing numbers","Running speed"]},a:1},
+ {q:{fa:"مدل پنج عاملی شخصیت شامل کدام ویژگی نمی‌شود؟",en:"Which trait is NOT part of the Big Five personality model?"},o:{fa:["برون‌گرایی","هوش","توافق‌پذیری","وظیفه‌شناسی"],en:["Extraversion","Intelligence","Agreeableness","Conscientiousness"]},a:1},
+ {q:{fa:"کدام یک از راهکارهای مقابله با استرس است؟",en:"Which is a coping strategy for stress?"},o:{fa:["پرخوری","مدیتیشن","بی‌خوابی","انزوا"],en:["Overeating","Meditation","Insomnia","Isolation"]},a:1},
+ {q:{fa:"پدر روانشناسی نوین چه کسی است؟",en:"Who is the father of modern psychology?"},o:{fa:["زیگموند فروید","ویلهلم وونت","ایوان پاولف","کارل یونگ"],en:["Sigmund Freud","Wilhelm Wundt","Ivan Pavlov","Carl Jung"]},a:1},
+ {q:{fa:"کدام هورمون به عنوان هورمون استرس شناخته می‌شود؟",en:"Which hormone is known as the stress hormone?"},o:{fa:["دوپامین","سروتونین","کورتیزول","اندورفین"],en:["Dopamine","Serotonin","Cortisol","Endorphin"]},a:2},
+ {q:{fa:"شرطی‌سازی کلاسیک توسط چه کسی کشف شد؟",en:"Classical conditioning was discovered by whom?"},o:{fa:["اسکینر","پاولف","واتسون","بندورا"],en:["Skinner","Pavlov","Watson","Bandura"]},a:1},
+ {q:{fa:"هرم نیازهای مازلو در کدام سطح شروع می‌شود؟",en:"Maslow's hierarchy of needs starts at which level?"},o:{fa:["نیازهای فیزیولوژیکی","نیاز به امنیت","نیاز به عشق","خودشکوفایی"],en:["Physiological needs","Safety needs","Love needs","Self-actualization"]},a:0},
+ {q:{fa:"کدام قسمت مغز مسئول احساسات است؟",en:"Which part of the brain is responsible for emotions?"},o:{fa:["مخچه","آمیگدال","ساقه مغز","لوب پیشانی"],en:["Cerebellum","Amygdala","Brain stem","Frontal lobe"]},a:1}
+];
+const STORE = [
+ {id:1,nameFa:"آواتار ویژه",nameEn:"Special Avatar",descFa:"یک آواتار منحصر به فرد برای پروفایل شما",descEn:"A unique avatar for your profile",price:50,icon:"👤"},
+ {id:2,nameFa:"قاب طلایی",nameEn:"Golden Frame",descFa:"قاب طلایی زیبا برای نام کاربری شما",descEn:"Beautiful golden frame for your username",price:100,icon:"🖼️"},
+ {id:3,nameFa:"ایموجی پک",nameEn:"Emoji Pack",descFa:"مجموعه ایموجی‌های انحصاری",descEn:"Exclusive emoji collection",price:30,icon:"😎"},
+ {id:4,nameFa:"تم رنگی",nameEn:"Color Theme",descFa:"تم رنگی سفارشی برای بازی",descEn:"Custom color theme for the game",price:75,icon:"🎨"},
+ {id:5,nameFa:"جان اضافی",nameEn:"Extra Life",descFa:"یک جان اضافی در آزمون‌ها",descEn:"An extra life in quizzes",price:40,icon:"❤️"},
+ {id:6,nameFa:"راهنمای آزمون",nameEn:"Quiz Hint",descFa:"دریافت راهنمایی در آزمون‌ها",descEn:"Get hints in quizzes",price:20,icon:"💡"}
+];
+const T = {
+ fa:{appName:"درسو",tagline:"بازی آموزشی رقابتی",enterNickname:"نام مستعار خود را وارد کنید",nicknamePlaceholder:"نام مستعار...",selectLanguage:"زبان بازی را انتخاب کنید",persian:"فارسی",english:"English",enter:"ورود به بازی",watermark:"این بازی توسط @alipsy405_ir تولید شده",participants:"شرکت‌کنندگان",createCompetition:"ایجاد رقابت",getCoins:"دریافت سکه",settings:"تنظیمات",learning:"یادگیری",quiz:"آزمون",store:"فروشگاه",coins:"سکه",online:"آنلاین",offline:"آفلاین",sendMessage:"ارسال پیام",typeMessage:"پیام خود را بنویسید...",send:"ارسال",dailyCoin:"سکه روزانه",claimDaily:"دریافت سکه روزانه (+۱۰ سکه)",winReward:"جایزه برنده رقابت: +۵۰ سکه (خودکار)",alreadyClaimed:"سکه روزانه قبلاً دریافت شده",hoursRemaining:"ساعت تا دریافت بعدی",darkMode:"حالت تاریک",theme:"پوسته",fontSize:"اندازه فونت",small:"کوچک",medium:"متوسط",large:"بزرگ",back:"بازگشت",challenge:"دعوت به رقابت",accept:"قبول",reject:"رد",pendingChallenge:"شما یک دعوت رقابت دارید!",challengeSent:"دعوت رقابت ارسال شد!",startQuiz:"شروع آزمون",nextQuestion:"سوال بعدی",finish:"پایان",score:"امتیاز",buy:"خرید",price:"قیمت",purchased:"خریداری شده",notEnoughCoins:"سکه کافی نیست",support:"کانال پشتیبانی",noParticipants:"هنوز شرکت‌کننده‌ای وارد نشده",noOnlineUsers:"کاربر آنلاینی یافت نشد",quizComplete:"آزمون تمام شد!",yourScore:"امتیاز شما",outOf:"از",tryAgain:"تلاش دوباره",messages:"پیام‌ها",close:"بستن",competitionMode:"حالت رقابتی",normalMode:"حالت عادی",you:"شما",opponent:"حریف",youWon:"شما بردید! 🎉 +۵۰ سکه",youLost:"شما باختید",draw:"مساوی شد",waitingOpponent:"در انتظار پایان آزمون حریف...",challengeRejectedMsg:"دعوت رقابت شما رد شد",challengeAcceptedMsg:"دعوت رقابت پذیرفته شد!",logout:"خروج از حساب",noMessages:"هنوز پیامی نیست",empty:"—"},
+ en:{appName:"DarsO",tagline:"Competitive Learning Game",enterNickname:"Enter your nickname",nicknamePlaceholder:"Nickname...",selectLanguage:"Select game language",persian:"فارسی",english:"English",enter:"Enter Game",watermark:"Made by @alipsy405_ir",participants:"Participants",createCompetition:"Create Competition",getCoins:"Get Coins",settings:"Settings",learning:"Learning",quiz:"Quiz",store:"Store",coins:"Coins",online:"Online",offline:"Offline",sendMessage:"Send Message",typeMessage:"Type your message...",send:"Send",dailyCoin:"Daily Coin",claimDaily:"Claim Daily Coin (+10)",winReward:"Competition win reward: +50 coins (automatic)",alreadyClaimed:"Daily coin already claimed",hoursRemaining:"hours until next claim",darkMode:"Dark Mode",theme:"Theme",fontSize:"Font Size",small:"Small",medium:"Medium",large:"Large",back:"Back",challenge:"Challenge",accept:"Accept",reject:"Reject",pendingChallenge:"You have a challenge request!",challengeSent:"Challenge sent!",startQuiz:"Start Quiz",nextQuestion:"Next Question",finish:"Finish",score:"Score",buy:"Buy",price:"Price",purchased:"Purchased",notEnoughCoins:"Not enough coins",support:"Support Channel",noParticipants:"No participants yet",noOnlineUsers:"No online users found",quizComplete:"Quiz Complete!",yourScore:"Your Score",outOf:"out of",tryAgain:"Try Again",messages:"Messages",close:"Close",competitionMode:"Competition Mode",normalMode:"Normal Mode",you:"You",opponent:"Opponent",youWon:"You won! 🎉 +50 coins",youLost:"You lost",draw:"It's a draw",waitingOpponent:"Waiting for opponent to finish...",challengeRejectedMsg:"Your challenge was rejected",challengeAcceptedMsg:"Challenge accepted!",logout:"Log out",noMessages:"No messages yet",empty:"—"}
+};
+
+let S = {
+ lang:'fa', me:null, page:'login', users:{}, messages:[], challenges:[],
+ menuOpen:false, chatWith:null, learningItem:null,
+ quiz:{mode:'normal',challengeId:null,idx:0,score:0,answered:false,selected:null,done:false},
+ toast:null, incomingChallenge:null, engagedChallenges:new Set(), notifiedRejects:new Set(),
+ nickInput:'', msgInput:'', loading:true, presence:{}
+};
+
+function tr(){return T[S.lang];}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const root = document.getElementById('darso-root');
+const app = document.getElementById('darso-app');
+
+async function getUsers(){ try{ const r=await window.storage.get('darso-users',true); return r?JSON.parse(r.value):{}; }catch(e){ return {}; } }
+async function setUsers(u){ try{ await window.storage.set('darso-users',JSON.stringify(u),true); }catch(e){} }
+async function getPresence(){ try{ const r=await window.storage.get('darso-presence',true); return r?JSON.parse(r.value):{}; }catch(e){ return {}; } }
+async function setPresence(p){ try{ await window.storage.set('darso-presence',JSON.stringify(p),true); }catch(e){} }
+async function getMessages(){ try{ const r=await window.storage.get('darso-messages',true); return r?JSON.parse(r.value):[]; }catch(e){ return []; } }
+async function setMessages(m){ try{ await window.storage.set('darso-messages',JSON.stringify(m),true); }catch(e){} }
+async function getChallenges(){ try{ const r=await window.storage.get('darso-challenges',true); return r?JSON.parse(r.value):[]; }catch(e){ return []; } }
+async function setChallenges(c){ try{ await window.storage.set('darso-challenges',JSON.stringify(c),true); }catch(e){} }
+async function getMyNick(){ try{ const r=await window.storage.get('darso-me',false); return r?r.value:null; }catch(e){ return null; } }
+async function setMyNick(n){ try{ await window.storage.set('darso-me',n,false); }catch(e){} }
+
+function newId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function isOnline(nick){ const ts = S.presence[nick]; return !!(ts && (Date.now()-ts < 12000)); }
+function showToast(text){ S.toast=text; render(); setTimeout(()=>{ if(S.toast===text){S.toast=null; render();} },2800); }
+function applyTheme(){
+ const me = S.me ? S.users[S.me] : null;
+ root.classList.toggle('light', !!(me && me.theme==='light'));
+ root.classList.toggle('ltr', S.lang==='en');
+ root.style.setProperty('--fs', ((me&&me.fontSize)||16)+'px');
+}
+
+async function heartbeatAndPoll(){
+ if(!S.me) return;
+ // presence: write ONLY my own timestamp into the small presence map, never touch profile data here
+ let presence = await getPresence();
+ presence[S.me] = Date.now();
+ await setPresence(presence);
+ S.presence = presence;
+
+ // profile/users data: read-only refresh, never written here (prevents clobbering coin claims etc.)
+ S.users = await getUsers();
+ S.messages = await getMessages();
+ const challenges = await getChallenges();
+ S.challenges = challenges;
+
+ // incoming pending challenge for me
+ const incoming = challenges.find(c=>c.to===S.me && c.status==='pending');
+ S.incomingChallenge = incoming || null;
+
+ // rejection notice for challenges I sent
+ challenges.filter(c=>c.from===S.me && c.status==='rejected' && !S.notifiedRejects.has(c.id)).forEach(c=>{
+   S.notifiedRejects.add(c.id); showToast(tr().challengeRejectedMsg);
+ });
+
+ // auto-enter competition quiz on accept
+ const mineAccepted = challenges.find(c=>(c.from===S.me||c.to===S.me) && c.status==='accepted' && !S.engagedChallenges.has(c.id));
+ if(mineAccepted){
+   S.engagedChallenges.add(mineAccepted.id);
+   S.quiz = {mode:'competition',challengeId:mineAccepted.id,idx:0,score:0,answered:false,selected:null,done:false};
+   S.page='quiz';
+   showToast(tr().challengeAcceptedMsg);
+ }
+
+ // resolve completed competition coin award (first client to notice does it)
+ for(const c of challenges){
+   if(c.status==='accepted' && c.fromScore!=null && c.toScore!=null){
+     let winner = null;
+     if(c.fromScore>c.toScore) winner=c.from; else if(c.toScore>c.fromScore) winner=c.to;
+     const fresh = await getChallenges();
+     const idx = fresh.findIndex(x=>x.id===c.id);
+     if(idx>-1 && fresh[idx].status==='accepted'){
+       fresh[idx].status='completed'; fresh[idx].winner=winner;
+       await setChallenges(fresh);
+       if(winner){
+         let u2 = await getUsers();
+         if(u2[winner]){ u2[winner].coins=(u2[winner].coins||0)+50; await setUsers(u2); }
+       }
+     }
+   }
+ }
+ render();
+}
+
+let pollTimer=null;
+function startPolling(){ if(pollTimer) return; heartbeatAndPoll(); pollTimer=setInterval(heartbeatAndPoll,4000); }
+
+// ---------- actions ----------
+window.__d = {};
+
+__d.setLang = (l)=>{ S.lang=l; render(); };
+
+__d.doLogin = async ()=>{
+ const nick = (S.nickInput||'').trim().slice(0,24);
+ if(!nick) return;
+ let users = await getUsers();
+ if(!users[nick]){
+   users[nick] = {nickname:nick,language:S.lang,coins:0,lastDailyCoin:null,theme:'dark',fontSize:16,purchases:[]};
+   await setUsers(users);
+ }
+ let presence = await getPresence();
+ presence[nick] = Date.now();
+ await setPresence(presence);
+ await setMyNick(nick);
+ S.users = users; S.presence = presence; S.me = nick; S.page='home';
+ applyTheme();
+ startPolling();
+ render();
+};
+
+__d.logout = async ()=>{ await setMyNick(''); S.me=null; S.page='login'; if(pollTimer){clearInterval(pollTimer);pollTimer=null;} render(); };
+
+__d.toggleMenu = ()=>{ S.menuOpen=!S.menuOpen; render(); };
+__d.goto = (p)=>{ S.page=p; S.menuOpen=false; render(); };
+
+__d.openChat = (nick)=>{ S.chatWith=nick; S.page='chat'; render(); };
+__d.sendMsg = async ()=>{
+ const text=(S.msgInput||'').trim();
+ if(!text || !S.chatWith) return;
+ let msgs = await getMessages();
+ msgs.push({id:newId(),from:S.me,to:S.chatWith,text,ts:Date.now()});
+ await setMessages(msgs);
+ S.messages=msgs; S.msgInput='';
+ render();
+};
+
+__d.sendChallenge = async (nick)=>{
+ let challenges = await getChallenges();
+ if(challenges.find(c=>((c.from===S.me&&c.to===nick)||(c.from===nick&&c.to===S.me)) && (c.status==='pending'||c.status==='accepted'))) {
+   showToast(tr().empty); return;
+ }
+ challenges.push({id:newId(),from:S.me,to:nick,status:'pending',fromScore:null,toScore:null,ts:Date.now()});
+ await setChallenges(challenges);
+ S.challenges=challenges;
+ showToast(tr().challengeSent);
+ render();
+};
+
+__d.respondChallenge = async (accept)=>{
+ const c = S.incomingChallenge;
+ if(!c) return;
+ let challenges = await getChallenges();
+ const idx = challenges.findIndex(x=>x.id===c.id);
+ if(idx>-1){
+   challenges[idx].status = accept?'accepted':'rejected';
+   await setChallenges(challenges);
+   S.challenges=challenges;
+ }
+ S.incomingChallenge=null;
+ if(accept){
+   S.engagedChallenges.add(c.id);
+   S.quiz = {mode:'competition',challengeId:c.id,idx:0,score:0,answered:false,selected:null,done:false};
+   S.page='quiz';
+ }
+ render();
+};
+
+__d.claimDaily = async ()=>{
+ let users = await getUsers();
+ const u = users[S.me];
+ const now = Date.now();
+ if(!u.lastDailyCoin || (now-u.lastDailyCoin)>=86400000){
+   u.coins=(u.coins||0)+10; u.lastDailyCoin=now;
+   await setUsers(users); S.users=users;
+   showToast('+10 '+tr().coins);
+ }
+ render();
+};
+
+__d.openLearning = (id)=>{ S.learningItem = LEARNING.find(l=>l.id===id); S.page='learningDetail'; render(); };
+
+__d.startQuiz = ()=>{ S.quiz={mode:'normal',challengeId:null,idx:0,score:0,answered:false,selected:null,done:false}; S.page='quiz'; render(); };
+
+__d.answerQuiz = (optIdx)=>{
+ if(S.quiz.answered) return;
+ S.quiz.answered=true; S.quiz.selected=optIdx;
+ if(optIdx===QUIZ[S.quiz.idx].a) S.quiz.score++;
+ render();
+};
+
+__d.nextQuiz = async ()=>{
+ if(S.quiz.idx < QUIZ.length-1){
+   S.quiz.idx++; S.quiz.answered=false; S.quiz.selected=null; render();
+ } else {
+   S.quiz.done=true;
+   if(S.quiz.mode==='competition' && S.quiz.challengeId){
+     let challenges = await getChallenges();
+     const idx = challenges.findIndex(c=>c.id===S.quiz.challengeId);
+     if(idx>-1){
+       if(challenges[idx].from===S.me) challenges[idx].fromScore=S.quiz.score;
+       else challenges[idx].toScore=S.quiz.score;
+       await setChallenges(challenges);
+       S.challenges=challenges;
+     }
+   }
+   render();
+ }
+};
+
+__d.buyItem = async ()=>{}; // replaced below with param version
+__d.buy = async (id)=>{
+ let users = await getUsers();
+ const u = users[S.me];
+ const item = STORE.find(s=>s.id===id);
+ if(!u.purchases) u.purchases=[];
+ if(u.purchases.includes(id)) return;
+ if((u.coins||0) < item.price){ showToast(tr().notEnoughCoins); render(); return; }
+ u.coins -= item.price; u.purchases.push(id);
+ await setUsers(users); S.users=users;
+ render();
+};
+
+__d.setTheme = async (theme)=>{
+ let users=await getUsers(); users[S.me].theme=theme; await setUsers(users); S.users=users; applyTheme(); render();
+};
+__d.setFontSize = async (fs)=>{
+ let users=await getUsers(); users[S.me].fontSize=fs; await setUsers(users); S.users=users; applyTheme(); render();
+};
+__d.setUserLang = async (l)=>{
+ S.lang=l;
+ if(S.me){ let users=await getUsers(); if(users[S.me]){users[S.me].language=l; await setUsers(users); S.users=users;} }
+ applyTheme(); render();
+};
+
+__d.input = (field,val)=>{ S[field]=val; };
+
+// ---------- render ----------
+function bg(){
+ return '<div class="emblem-wrap">'+
+   '<div class="glow" style="top:8%;left:10%"></div>'+
+   '<div class="glow" style="bottom:5%;right:5%;background:radial-gradient(circle,var(--gold),transparent 70%)"></div>'+
+   '<div class="emblem-ring"></div><div class="emblem-ring r2"></div><div class="emblem-ring r3"></div>'+
+   '<div class="cap" style="top:16%;left:14%;animation-delay:0s">🎓</div>'+
+   '<div class="cap" style="top:65%;left:78%;animation-delay:1.5s;font-size:44px">📖</div>'+
+   '<div class="cap" style="top:75%;left:18%;animation-delay:3s;font-size:36px">✒️</div>'+
+   '<div class="cap" style="top:12%;left:74%;animation-delay:2s;font-size:40px">🏛️</div>'+
+ '</div>';
+}
+
+function pageLogin(){
+ const t=tr();
+ return bg()+'<div class="center-col">'+
+  '<div class="glass" style="padding:34px 28px;max-width:380px;width:100%;text-align:center;">'+
+   '<div style="font-size:52px;margin-bottom:6px;">🎓</div>'+
+   '<div style="font-size:1.7em;font-weight:800;letter-spacing:.5px;background:linear-gradient(135deg,var(--gold-soft),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;">'+t.appName+'</div>'+
+   '<div style="color:var(--dim);font-size:.85em;margin-bottom:22px;">'+t.tagline+'</div>'+
+   '<div style="text-align:'+(S.lang==='fa'?'right':'left')+';font-size:.85em;color:var(--dim);margin-bottom:6px;">'+t.enterNickname+'</div>'+
+   '<input type="text" id="nickField" placeholder="'+t.nicknamePlaceholder+'" value="'+esc(S.nickInput)+'" maxlength="24" oninput="__d.input(\'nickInput\',this.value)" onkeydown="if(event.key===\'Enter\')__d.doLogin()">'+
+   '<div style="text-align:'+(S.lang==='fa'?'right':'left')+';font-size:.85em;color:var(--dim);margin:16px 0 6px;">'+t.selectLanguage+'</div>'+
+   '<div class="lang-toggle">'+
+     '<div class="lang-opt '+(S.lang==='fa'?'active':'')+'" onclick="__d.setLang(\'fa\')">'+t.persian+'</div>'+
+     '<div class="lang-opt '+(S.lang==='en'?'active':'')+'" onclick="__d.setLang(\'en\')">'+t.english+'</div>'+
+   '</div>'+
+   '<button class="btn btn-gold" style="width:100%;margin-top:6px;" onclick="__d.doLogin()">'+t.enter+' 🚀</button>'+
+  '</div>'+
+ '</div>'+
+ '<div class="watermark">✦ '+t.watermark+' ✦</div>';
+}
+
+function topBarHome(){
+ const t=tr(); const me=S.users[S.me]||{};
+ return '<div class="topbar">'+
+  '<div class="glass pill"><span>👤</span><b>'+esc(S.me)+'</b><span class="coin">🪙 '+(me.coins||0)+'</span></div>'+
+  '<div class="glass hamburger" onclick="__d.toggleMenu()">☰</div>'+
+ '</div>';
+}
+
+function menuPanel(){
+ const t=tr();
+ return '<div class="overlay '+(S.menuOpen?'open':'')+'" onclick="__d.toggleMenu()"></div>'+
+  '<div class="glass menu-panel '+(S.menuOpen?'open':'')+'">'+
+   '<div style="font-weight:800;font-size:1.1em;margin-bottom:10px;">☰ '+t.appName+'</div>'+
+   '<div class="menu-item" onclick="__d.goto(\'participants\')">👥 '+t.participants+'</div>'+
+   '<div class="menu-item" onclick="__d.goto(\'competition\')">⚔️ '+t.createCompetition+'</div>'+
+   '<div class="menu-item" onclick="__d.goto(\'coins\')">🪙 '+t.getCoins+'</div>'+
+   '<div class="menu-item" onclick="__d.goto(\'settings\')">⚙️ '+t.settings+'</div>'+
+   '<div style="flex:1;"></div>'+
+   '<div class="menu-item" style="color:var(--red);" onclick="__d.logout()">🚪 '+t.logout+'</div>'+
+  '</div>';
+}
+
+function pageHome(){
+ const t=tr();
+ return bg()+topBarHome()+menuPanel()+
+ '<div class="center-col">'+
+  '<div style="text-align:center;margin-bottom:26px;">'+
+   '<div style="font-size:2em;font-weight:800;background:linear-gradient(135deg,var(--gold-soft),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;">'+t.appName+'</div>'+
+   '<div style="color:var(--dim);font-size:.85em;">'+t.tagline+'</div>'+
+  '</div>'+
+  '<div style="width:100%;max-width:380px;">'+
+   '<div class="glass main-btn" onclick="__d.goto(\'learning\')"><div class="ic">📚</div><div><div class="lbl">'+t.learning+'</div><div class="sub">'+LEARNING.length+' '+(S.lang==='fa'?'مبحث':'topics')+'</div></div></div>'+
+   '<div class="glass main-btn" onclick="__d.startQuiz()"><div class="ic">📝</div><div><div class="lbl">'+t.quiz+'</div><div class="sub">'+QUIZ.length+' '+(S.lang==='fa'?'سوال':'questions')+'</div></div></div>'+
+   '<div class="glass main-btn" onclick="__d.goto(\'store\')"><div class="ic">🛍️</div><div><div class="lbl">'+t.store+'</div><div class="sub">'+STORE.length+' '+(S.lang==='fa'?'آیتم':'items')+'</div></div></div>'+
+  '</div>'+
+ '</div>'+
+ '<div style="text-align:center;padding-bottom:18px;position:relative;z-index:1;">'+
+  '<a class="support-link" href="https://t.me/s_alipsy_ai" target="_blank" rel="noopener">💬 '+t.support+'</a>'+
+ '</div>';
+}
+
+function subHeader(title){
+ return '<div class="back-btn" onclick="__d.goto(\'home\')">'+(S.lang==='fa'?'→':'←')+' '+tr().back+'</div><div class="page-title">'+title+'</div>';
+}
+
+function pageParticipants(){
+ const t=tr();
+ const list = Object.values(S.users).sort((a,b)=>isOnline(b.nickname)-isOnline(a.nickname));
+ let html = bg()+'<div class="page">'+subHeader('👥 '+t.participants);
+ if(!list.length) html += '<div class="glass card" style="text-align:center;color:var(--dim);">'+t.noParticipants+'</div>';
+ list.forEach(u=>{
+   const on = isOnline(u.nickname);
+   html += '<div class="glass card row" style="cursor:pointer;" onclick="__d.openChat(\''+esc(u.nickname)+'\')">'+
+     '<span class="dot '+(on?'on':'off')+'"></span>'+
+     '<div style="flex:1;"><b>'+esc(u.nickname)+(u.nickname===S.me?(' ('+t.you+')'):'')+'</b><div style="font-size:.75em;color:var(--dim);">'+(on?t.online:t.offline)+'</div></div>'+
+     '<span class="coin">🪙 '+(u.coins||0)+'</span>'+
+     (u.nickname!==S.me?'<span style="font-size:1.2em;">💬</span>':'')+
+   '</div>';
+ });
+ return html+'</div>';
+}
+
+function pageChat(){
+ const t=tr();
+ const thread = S.messages.filter(m=>(m.from===S.me&&m.to===S.chatWith)||(m.from===S.chatWith&&m.to===S.me)).sort((a,b)=>a.ts-b.ts);
+ let html = bg()+'<div class="page" style="display:flex;flex-direction:column;">'+
+  '<div class="back-btn" onclick="__d.goto(\'participants\')">'+(S.lang==='fa'?'→':'←')+' '+t.back+'</div>'+
+  '<div class="page-title">💬 '+esc(S.chatWith)+'</div>'+
+  '<div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:6px 0;">';
+ if(!thread.length) html += '<div style="text-align:center;color:var(--dim);margin-top:20px;">'+t.noMessages+'</div>';
+ thread.forEach(m=>{ html += '<div class="msg-bubble '+(m.from===S.me?'msg-mine':'msg-theirs')+'">'+esc(m.text)+'</div>'; });
+ html += '</div>'+
+  '<div class="row" style="margin-top:10px;">'+
+   '<input type="text" placeholder="'+t.typeMessage+'" value="'+esc(S.msgInput)+'" oninput="__d.input(\'msgInput\',this.value)" onkeydown="if(event.key===\'Enter\')__d.sendMsg()">'+
+   '<button class="btn btn-blue" onclick="__d.sendMsg()">'+t.send+'</button>'+
+  '</div></div>';
+ return html;
+}
+
+function pageCompetition(){
+ const t=tr();
+ const online = Object.values(S.users).filter(u=>u.nickname!==S.me && isOnline(u.nickname));
+ let html = bg()+'<div class="page">'+subHeader('⚔️ '+t.createCompetition);
+ if(!online.length) html += '<div class="glass card" style="text-align:center;color:var(--dim);">'+t.noOnlineUsers+'</div>';
+ online.forEach(u=>{
+   html += '<div class="glass card row">'+
+    '<span class="dot on"></span>'+
+    '<div style="flex:1;"><b>'+esc(u.nickname)+'</b></div>'+
+    '<button class="btn btn-gold" style="padding:8px 14px;" onclick="__d.sendChallenge(\''+esc(u.nickname)+'\')">'+t.challenge+'</button>'+
+   '</div>';
+ });
+ return html+'</div>';
+}
+
+function pageCoins(){
+ const t=tr(); const u=S.users[S.me]||{};
+ const now=Date.now();
+ const canClaim = !u.lastDailyCoin || (now-u.lastDailyCoin)>=86400000;
+ const hoursLeft = canClaim?0:Math.ceil((86400000-(now-u.lastDailyCoin))/3600000);
+ return bg()+'<div class="page">'+subHeader('🪙 '+t.getCoins)+
+  '<div class="glass card" style="text-align:center;">'+
+   '<div style="font-size:2em;">🪙</div>'+
+   '<div style="font-size:1.6em;font-weight:800;margin:6px 0;">'+(u.coins||0)+' '+t.coins+'</div>'+
+  '</div>'+
+  '<div class="glass card">'+
+   '<div style="font-weight:700;margin-bottom:10px;">'+t.dailyCoin+'</div>'+
+   (canClaim?
+     '<button class="btn btn-gold" style="width:100%;" onclick="__d.claimDaily()">'+t.claimDaily+'</button>':
+     '<button class="btn btn-ghost" style="width:100%;" disabled>'+t.alreadyClaimed+' — '+hoursLeft+' '+t.hoursRemaining+'</button>')+
+  '</div>'+
+  '<div class="glass card">'+
+   '<div style="font-weight:700;">🏆 '+t.winReward+'</div>'+
+  '</div>'+
+ '</div>';
+}
+
+function pageSettings(){
+ const t=tr(); const u=S.users[S.me]||{theme:'dark',fontSize:16};
+ return bg()+'<div class="page">'+subHeader('⚙️ '+t.settings)+
+  '<div class="glass card">'+
+   '<div style="font-weight:700;margin-bottom:10px;">🌗 '+t.theme+'</div>'+
+   '<div class="row">'+
+    '<button class="btn '+(u.theme!=='light'?'btn-gold':'btn-ghost')+'" style="flex:1;" onclick="__d.setTheme(\'dark\')">🌙 '+t.darkMode+'</button>'+
+    '<button class="btn '+(u.theme==='light'?'btn-gold':'btn-ghost')+'" style="flex:1;" onclick="__d.setTheme(\'light\')">☀️ '+(S.lang==='fa'?'روشن':'Light')+'</button>'+
+   '</div>'+
+  '</div>'+
+  '<div class="glass card">'+
+   '<div style="font-weight:700;margin-bottom:10px;">🔤 '+t.fontSize+'</div>'+
+   '<div class="row">'+
+    [14,16,19].map((fs,i)=>'<button class="btn '+((u.fontSize||16)===fs?'btn-gold':'btn-ghost')+'" style="flex:1;" onclick="__d.setFontSize('+fs+')">'+[t.small,t.medium,t.large][i]+'</button>').join('')+
+   '</div>'+
+  '</div>'+
+  '<div class="glass card">'+
+   '<div style="font-weight:700;margin-bottom:10px;">🌐 '+t.selectLanguage+'</div>'+
+   '<div class="lang-toggle" style="margin:0;">'+
+    '<div class="lang-opt '+(S.lang==='fa'?'active':'')+'" onclick="__d.setUserLang(\'fa\')">'+t.persian+'</div>'+
+    '<div class="lang-opt '+(S.lang==='en'?'active':'')+'" onclick="__d.setUserLang(\'en\')">'+t.english+'</div>'+
+   '</div>'+
+  '</div>'+
+ '</div>';
+}
+
+function pageLearning(){
+ const t=tr();
+ let html = bg()+'<div class="page">'+subHeader('📚 '+t.learning);
+ LEARNING.forEach(l=>{
+   html += '<div class="glass card row" style="cursor:pointer;" onclick="__d.openLearning('+l.id+')">'+
+    '<div style="font-size:1.4em;">📖</div><div style="flex:1;"><b>'+(S.lang==='fa'?l.titleFa:l.titleEn)+'</b></div><div>'+(S.lang==='fa'?'←':'→')+'</div>'+
+   '</div>';
+ });
+ return html+'</div>';
+}
+function pageLearningDetail(){
+ const t=tr(); const l=S.learningItem; if(!l) return pageLearning();
+ return bg()+'<div class="page">'+
+  '<div class="back-btn" onclick="__d.goto(\'learning\')">'+(S.lang==='fa'?'→':'←')+' '+t.back+'</div>'+
+  '<div class="glass card"><div class="page-title" style="margin-bottom:12px;">📖 '+(S.lang==='fa'?l.titleFa:l.titleEn)+'</div>'+
+  '<div style="line-height:1.9;color:var(--text);opacity:.9;">'+(S.lang==='fa'?l.contentFa:l.contentEn)+'</div></div>'+
+ '</div>';
+}
+
+function pageStore(){
+ const t=tr(); const u=S.users[S.me]||{purchases:[]};
+ let html = bg()+'<div class="page">'+subHeader('🛍️ '+t.store);
+ STORE.forEach(s=>{
+   const owned = (u.purchases||[]).includes(s.id);
+   html += '<div class="glass card row">'+
+    '<div style="font-size:1.6em;">'+s.icon+'</div>'+
+    '<div style="flex:1;"><b>'+(S.lang==='fa'?s.nameFa:s.nameEn)+'</b><div style="font-size:.78em;color:var(--dim);">'+(S.lang==='fa'?s.descFa:s.descEn)+'</div></div>'+
+    (owned?'<span class="btn btn-ghost" style="padding:8px 14px;">✓ '+t.purchased+'</span>':
+     '<button class="btn btn-gold" style="padding:8px 14px;" onclick="__d.buy('+s.id+')">🪙'+s.price+'</button>')+
+   '</div>';
+ });
+ return html+'</div>';
+}
+
+function pageQuiz(){
+ const t=tr(); const qz=S.quiz;
+ if(qz.done){
+   let resultBlock = '';
+   if(qz.mode==='competition'){
+     const c = S.challenges.find(x=>x.id===qz.challengeId);
+     if(c && c.status==='completed'){
+       const iAmFrom = c.from===S.me;
+       const myScore = iAmFrom?c.fromScore:c.toScore;
+       const oppScore = iAmFrom?c.toScore:c.fromScore;
+       const oppName = iAmFrom?c.to:c.from;
+       let verdict = c.winner===S.me? t.youWon : (c.winner? t.youLost : t.draw);
+       resultBlock = '<div class="glass card" style="text-align:center;">'+
+         '<div style="font-weight:800;font-size:1.1em;margin-bottom:8px;">'+verdict+'</div>'+
+         '<div>'+t.you+': <b>'+myScore+'</b> &nbsp;|&nbsp; '+esc(oppName)+': <b>'+oppScore+'</b></div>'+
+       '</div>';
+     } else {
+       resultBlock = '<div class="glass card" style="text-align:center;color:var(--dim);">⏳ '+t.waitingOpponent+'</div>';
+     }
+   }
+   return bg()+'<div class="page">'+
+    '<div class="glass card" style="text-align:center;">'+
+     '<div style="font-size:1.6em;">🏁</div>'+
+     '<div style="font-weight:800;font-size:1.2em;margin:8px 0;">'+t.quizComplete+'</div>'+
+     '<div>'+t.yourScore+': <b>'+qz.score+'</b> '+t.outOf+' '+QUIZ.length+'</div>'+
+    '</div>'+
+    resultBlock+
+    '<button class="btn btn-gold" style="width:100%;margin-top:10px;" onclick="__d.goto(\'home\')">'+t.back+'</button>'+
+   '</div>';
+ }
+ const q = QUIZ[qz.idx];
+ const opts = q.o[S.lang];
+ let html = bg()+'<div class="page">'+
+  '<div class="page-title" style="justify-content:space-between;"><span>📝 '+(qz.mode==='competition'?t.competitionMode:t.normalMode)+'</span><span class="coin">'+(qz.idx+1)+'/'+QUIZ.length+'</span></div>'+
+  '<div class="progress-bar"><div class="progress-fill" style="width:'+((qz.idx)/QUIZ.length*100)+'%"></div></div>'+
+  '<div class="glass card"><div style="font-weight:700;font-size:1.05em;margin-bottom:6px;">'+q.q[S.lang]+'</div></div>';
+ opts.forEach((o,i)=>{
+   let cls='';
+   if(qz.answered){
+     if(i===q.a) cls='correct'; else if(i===qz.selected) cls='wrong';
+   }
+   html += '<button class="option-btn '+cls+'" onclick="__d.answerQuiz('+i+')" '+(qz.answered?'disabled':'')+'>'+o+'</button>';
+ });
+ if(qz.answered){
+   html += '<button class="btn btn-blue" style="width:100%;margin-top:8px;" onclick="__d.nextQuiz()">'+(qz.idx<QUIZ.length-1?t.nextQuestion:t.finish)+'</button>';
+ }
+ return html+'</div>';
+}
+
+function challengeModal(){
+ if(!S.incomingChallenge) return '';
+ const t=tr(); const c=S.incomingChallenge;
+ return '<div class="modal-back"><div class="glass modal">'+
+  '<div style="font-size:2em;">⚔️</div>'+
+  '<div style="font-weight:800;margin:10px 0;">'+t.pendingChallenge+'</div>'+
+  '<div style="color:var(--dim);margin-bottom:16px;">'+esc(c.from)+'</div>'+
+  '<div class="row">'+
+   '<button class="btn btn-gold" style="flex:1;" onclick="__d.respondChallenge(true)">✓ '+t.accept+'</button>'+
+   '<button class="btn btn-danger" style="flex:1;" onclick="__d.respondChallenge(false)">✕ '+t.reject+'</button>'+
+  '</div>'+
+ '</div></div>';
+}
+
+function render(){
+ applyTheme();
+ let body='';
+ if(!S.me){ body = pageLogin(); }
+ else{
+   switch(S.page){
+     case 'participants': body=pageParticipants(); break;
+     case 'chat': body=pageChat(); break;
+     case 'competition': body=pageCompetition(); break;
+     case 'coins': body=pageCoins(); break;
+     case 'settings': body=pageSettings(); break;
+     case 'learning': body=pageLearning(); break;
+     case 'learningDetail': body=pageLearningDetail(); break;
+     case 'store': body=pageStore(); break;
+     case 'quiz': body=pageQuiz(); break;
+     default: body=pageHome();
+   }
+   body += challengeModal();
+ }
+ if(S.toast) body += '<div class="glass toast">'+esc(S.toast)+'</div>';
+ app.innerHTML = '<div class="scene">'+body+'</div>';
+ const nf=document.getElementById('nickField'); if(nf) nf.focus();
+}
+
+// ---------- boot ----------
+(async function boot(){
+ try{
+   const mine = await getMyNick();
+   if(mine){
+     let users = await getUsers();
+     if(users[mine]){
+       S.me=mine; S.users=users; S.lang=users[mine].language||'fa'; S.page='home';
+       S.presence = await getPresence();
+       startPolling();
+     }
+   }
+ }catch(e){}
+ render();
+})();
+
+})();
+</script>
+</body>
+</html>
